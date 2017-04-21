@@ -23,7 +23,7 @@ prep <- function(df)
 {
   psc_trans_table <<- read_csv("pscTransTable.csv")
   #pull IT PSC vector from psc translation table
-  cat_pscs <- psc_trans_table %>% filter(Level_1_Category == "Human Capital") %>% select(`4_Digit_PSC`) %>% .$'4_Digit_PSC'
+  cat_pscs <- psc_trans_table %>% filter(Level_1_Category == "Transportation and Logistics Services") %>% select(`4_Digit_PSC`) %>% .$'4_Digit_PSC'
   #load corresponding transactions from data frame
   load_df <- df %>% filter(product_or_service_code %in% cat_pscs) %>%select(product_or_service_code, naics_code, funding_agency_name, vendor_duns_number)
   load_df$subcategory <- unlist(lapply(load_df$product_or_service_code, get_subcategory))
