@@ -10,7 +10,14 @@ main <- function()
   transation_df <<- read_tsv("FPDS_ATOM_GW_19APR17.tsv")
   vehicle_df <<- read_csv("Contract Vechicle Reference.csv")
   psc_trans_table <<- read_csv("pscTransTable.csv")
-  prepped_df <- prep("Human Capital")
+  prepped_df <- prep("JANSAN")
+}
+
+
+get_contract_soln_piids <- function(contract_name)
+{
+  idv_piids <- vehicle_df %>% filter(contract_vehicle == contract_name) %>% select(reference_piid) %>% .$reference_piid
+  idv_piids
 }
 
 #note: one can test the validity of the contract vehicle df by checking to make sure the size of each object returned 
@@ -25,10 +32,10 @@ get_contract_solution <- function(reference_piid_target)
 
 
 
-prep <- function(category)
+prep <- function(reference_piids)
 {
-  target_pscs <- psc_trans_table %>% filter(Level_1_Category == category) %>% select(`4_Digit_PSC`) %>% .$`4_Digit_PSC`
-  load_df <- transation_df %>% filter( product_or_service_code  %in% target_pscs) #subset to a specific category
+  #target_pscs <- vehicle_df %>% filter(Level_1_Category == category) %>% select(`4_Digit_PSC`) %>% .$`4_Digit_PSC`
+  load_df <- transation_df %>% filter( reference_piid  %in% reference_piids) #subset to a specific contract soln
   load_df$contract_soln <- unlist(lapply(load_df$reference_piid, get_contract_solution)) #get contract solns
   load_df <- load_df %>% filter(!is.na(contract_soln)) #get rid of rows with no contract solution
   load_df <- load_df %>% select(product_or_service_code, naics_code, funding_agency_name, funding_department_name, contracting_office_name, vendor_duns_number, contract_soln)
