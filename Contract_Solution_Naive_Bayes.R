@@ -38,7 +38,7 @@ prep <- function(reference_piids)
   load_df <- transation_df %>% filter( reference_piid  %in% reference_piids) #subset to a specific contract soln
   load_df$contract_soln <- unlist(lapply(load_df$reference_piid, get_contract_solution)) #get contract solns
   load_df <- load_df %>% filter(!is.na(contract_soln)) #get rid of rows with no contract solution
-  load_df <- load_df %>% select(product_or_service_code, naics_code, funding_agency_name, funding_department_name, contracting_office_name, vendor_duns_number, contract_soln)
+  load_df <- load_df %>% select(product_or_service_code, naics_code, funding_agency_name, funding_department_name, contracting_office_name, vendor_duns_number, contract_soln, dollars_obligated)
   load_df <- na.omit(load_df)
   #most important to note: We need to convert all columns to factors for training and predicting to work
   attribute_names <- colnames(load_df)
