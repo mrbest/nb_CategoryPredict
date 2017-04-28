@@ -105,9 +105,9 @@ produce_model <- function(df)
   df_test <- df[test_count_min:df_count, ]
   test_labels_actual <- df_test %>% select(this_vehicle) %>% .$this_vehicle
   df_test <- df_test %>% select(-this_vehicle)
-  #label_model <- naiveBayes(this_vehicle ~ product_or_service_code+naics_code+funding_agency_name+vendor_duns_number, data=df_train)
+  label_model <- naiveBayes(this_vehicle ~ product_or_service_code+naics_code+funding_agency_name+vendor_duns_number, data=df_train)
   #label_model <- svm(this_vehicle ~ product_or_service_code+naics_code+funding_agency_name+vendor_duns_number ,data=df_train, probability=TRUE)
-  label_model <- rpart(this_vehicle ~ product_or_service_code+naics_code+funding_agency_name+vendor_duns_number, data=df_train, method = "class")
+  #label_model <- rpart(this_vehicle ~ product_or_service_code+naics_code+funding_agency_name+vendor_duns_number, data=df_train, method = "class")
   fit_values <- fitted(label_model)
   predictions <- predict(label_model, df_test)
   #predictions
@@ -122,7 +122,7 @@ produce_model <- function(df)
 produce_addressable_spend_prediction <- function(label_model, df)
 {
     #creating predictions
-    yes_soln <- predict(label_model, df_test)
+    yes_soln <- predict(label_model, df)
     #binding it to original smaller data-set
     df <- cbind(df, yes_soln)
     #subsetting it to only those rows that ARE predicted as being BIC
