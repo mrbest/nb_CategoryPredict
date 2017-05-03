@@ -35,6 +35,7 @@ generate_training_data <- function(transaction_df, bic_name)
   bic_df <- transaction_df %>% filter(reference_piid %in% bic_ref_idv_piids)
   #generate all psc/naics combinations
   bic_df$psc_naics_combo <- paste0(bic_df$product_or_service_code, bic_df$naics_code)
+  proportions <<- proportional_spend(bic_df)
   transaction_df$psc_naics_combo <- paste0(transaction_df$product_or_service_code, transaction_df$naics_code)
   #capture psc_naics_combos not present in the bic
   negative_bic_df <- transaction_df %>% filter(! psc_naics_combo %in% bic_df$psc_naics_combo)
@@ -175,4 +176,22 @@ produce_addressable_spend_prediction <- function(label_model, df)
   #print(paste("Accuracy of fit is ", accuracy))
   
   results
+}
+
+proportional_spend <- function(bic_df)
+{
+  unique_psc_naics_bic_combo <- unique(bic_df$psc_naics_combo)
+  storage_df <- as.data.frame(NULL)
+  i <- length(unique_psc_naics_bic_combo)
+  value <- as.data.frame(NULL)
+for(j in 1:i)
+   {
+         storage_df <- filter(bic_df, bic_df$psc_naics_combo == unique_psc_naics_bic_combo[j])
+         storage_df$dollars_obligated <- as.numeric(storage_df$dollars_obligated)
+         value[j,1] <- unique_psc_naics_bic_combo[j]
+         value[j,2] <- sum(storage_df$dollars_obligated)
+         colnames(value) <- c("psc_naics_combo", "Dollars Obligated")
+}
+  value$proportion <- value$`Dollars Obligated`/sum(bic_df$dollars_obligated)
+value
 }
