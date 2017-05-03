@@ -9,7 +9,7 @@ require(kknn)
 main <- function()
 {
   print("Loading data")
-  #fpds_df <- read_tsv("FPDS_ATOM_GW_19APR17.tsv")
+  fpds_df <- read_tsv("FPDS_ATOM_GW_19APR17.tsv")
   print("Generating training data")
   training_data <- generate_training_data(fpds_df, "BMO")
   print("Generating test data")
