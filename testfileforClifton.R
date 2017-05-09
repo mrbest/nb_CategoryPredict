@@ -12,9 +12,9 @@ main <- function()
   print("Loading data")
   fpds_df <- read_tsv("FPDS_ATOM_GW_19APR17.tsv")
   print("Generating training data")
-  training_data <- generate_training_data(fpds_df, "OS3")
+  training_data <- generate_training_data(fpds_df, "OASIS")
   print("Generating test data")
-  test_data <- generate_test_data(fpds_df, "OS3")
+  test_data <- generate_test_data(fpds_df, "OASIS")
   print("Training model")
   os3_model <- produce_model(training_data)
   print("Predicting")
@@ -28,15 +28,15 @@ generate_training_data <- function(transaction_df, bic_name)
   transaction_df <- transaction_df %>% filter(award_or_idv == "AWARD") 
   transaction_df <- transaction_df %>% filter(bsp_delete_flag == "N")
   #read in BIC list
-  vehicle_df <- read_tsv("Official_BIC_April_26_17.tsv")
+  vehicle_df <- read_tsv("BIC List - Official - detail.tsv")
   #capture coresponding ref_idv piids
-  bic_ref_idv_piids <- vehicle_df %>% filter(official_bic_contract == bic_name) %>% select(reference_piid)%>% .$reference_piid
+  bic_ref_idv_piids <- vehicle_df %>% filter(Contract == bic_name) %>% select(`Contract ID`)%>% .$`Contract ID`
   #capture all transactions from the target BIC
   bic_df <- transaction_df %>% filter(reference_piid %in% bic_ref_idv_piids)
   #generate all psc/naics combinations
-  bic_df$psc_naics_combo <- paste0(bic_df$product_or_service_code, bic_df$naics_code)
+  bic_df$psc_naics_combo <- paste0(bic_df$product_or_service_code, sep = "_", bic_df$naics_code)
   proportions <<- proportional_spend(bic_df)
-  transaction_df$psc_naics_combo <- paste0(transaction_df$product_or_service_code, transaction_df$naics_code)
+  transaction_df$psc_naics_combo <- paste0(transaction_df$product_or_service_code, sep = "_", transaction_df$naics_code)
   #capture psc_naics_combos not present in the bic
   negative_bic_df <- transaction_df %>% filter(! psc_naics_combo %in% bic_df$psc_naics_combo)
   #retain only the distinct combinations of psc and naics
