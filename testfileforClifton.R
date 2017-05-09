@@ -8,17 +8,19 @@ require(kknn)
 
 main <- function()
 {
+  options(scipen=999)
   print("Loading data")
   fpds_df <- read_tsv("FPDS_ATOM_GW_19APR17.tsv")
   print("Generating training data")
-  training_data <- generate_training_data(fpds_df, "BMO")
+  training_data <- generate_training_data(fpds_df, "OS3")
   print("Generating test data")
-  test_data <- generate_test_data(fpds_df, "BMO")
+  test_data <- generate_test_data(fpds_df, "OS3")
   print("Training model")
   os3_model <- produce_model(training_data)
   print("Predicting")
-  addressable_spend <- produce_addressable_spend_prediction(os3_model, test_data)
-  addressable_spend
+  addressable_spend <<- produce_addressable_spend_prediction(os3_model, test_data)
+  addressable_spend_calculated <- calculate_addressable_spend_obligations(addressable_spend)
+  print(paste0("Predicted Addressable Spend is: ", addressable_spend_calculated))
 }
 
 generate_training_data <- function(transaction_df, bic_name)
@@ -116,4 +118,13 @@ for(j in 1:i)
 }
   value$proportion <- value$`Dollars Obligated`/sum(bic_df$dollars_obligated)
 value
+}
+
+calculate_addressable_spend_obligations <- function(df)
+{
+  final_results <- filter(df, df$predictions == TRUE)
+  dollars_obligated <- sum(final_results$dollars_obligated)
+  proportions$predicted_value <<- proportions$proportion * dollars_obligated
+  dollars_obligated
+  
 }
