@@ -13,6 +13,7 @@ main <- function()
   #fpds_df <<- read_tsv("FPDS_ATOM_GW_19APR17.tsv")
   vehicle_df <<- read_tsv("BIC List - Official - detail.tsv")
   bic_names <<- unique(vehicle_df$Contract)
+  #Remove HCATS --- Remove if working with transactions that include HCATS values!!
   bic_names <- bic_names[-3]
   print("Generating training data")
   fpds_df <- fpds_df %>% filter(as.Date(date_signed) >= as.Date("2015-10-01") & as.Date(date_signed) <= as.Date("2016-09-30"))
